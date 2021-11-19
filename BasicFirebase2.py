@@ -10,8 +10,9 @@ import requests
 
 cred = credentials.Certificate("./PAIO_AdminSDK.json")
 app = firebase_admin.initialize_app(cred)
+url = "https://icanpolsri-a0d38-default-rtdb.asia-southeast1.firebasedatabase.app/"
 
-ref = db.reference("/", app, "https://autofish-d31e9-default-rtdb.asia-southeast1.firebasedatabase.app")
+ref = db.reference("/", app, url)
 
 def getSensorData():
     data = None

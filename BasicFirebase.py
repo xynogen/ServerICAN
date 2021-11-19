@@ -6,13 +6,13 @@ import time
 
 
 
-cred = credentials.Certificate("./PAIO_AdminSDK.json")
+cred = credentials.Certificate("./icansdk.json")
 app = firebase_admin.initialize_app(cred)
-
-ref = db.reference("/", app, "https://autofish-d31e9-default-rtdb.asia-southeast1.firebasedatabase.app")
+url = "https://icanpolsri-a0d38-default-rtdb.asia-southeast1.firebasedatabase.app/"
+ref = db.reference("/", app, url)
 
 def setSwitchState(SwitchName: str, State: int):
-    listSwitch = ["SW0", "SW1", "SW2"]
+    listSwitch = ["SW0", "SW1", "SW2", "SW3"]
     response = ""
 
     if SwitchName not in listSwitch:
@@ -23,7 +23,7 @@ def setSwitchState(SwitchName: str, State: int):
         return -1
     
     try:
-        requests.get("http://192.168.0.101/SW/" + SwitchName[2:3] + "/" + str(State))
+        requests.get("http://192.168.0.103/SW/" + SwitchName[2:3] + "/" + str(State))
     except Exception:
         time.sleep(2)
         setSwitchState(SwitchName, State)
@@ -31,9 +31,9 @@ def setSwitchState(SwitchName: str, State: int):
     return 0
 
 def groundState():
-    switch = {"blower": "0", "pompa": "0"}
-    ref.child("switch").set(switch)
-    ref.child("restart").set("0")
+    # switch = {"blower": "0", "pompa": "0"}
+    # ref.child("switch").set(switch)
+    # ref.child("restart").set("0")
     setSwitchState("SW0", 1)
     setSwitchState("SW1", 1)
     setSwitchState("SW2", 1)
@@ -44,14 +44,10 @@ def restart():
     groundState()
 
 def sendPakan():
-    setSwitchState("SW0", 0)
-    time.sleep(15)
     setSwitchState("SW1", 0)
-    time.sleep(20)
-
-    setSwitchState("SW0", 1)
-    time.sleep(15)
-    setSwitchState("SW1", 1)
+    setSwitchState("SW0", 0)
+    time.sleep(2)   
+    
     groundState()
 
 def sendPompa():
@@ -86,4 +82,5 @@ def test(Data):
             print("Restart init")
 
 groundState()
-ref.listen(test)
+# ref.listen(test)
+sendPakan()
