@@ -37,26 +37,55 @@ def groundState():
     setSwitchState("SW0", 1)
     setSwitchState("SW1", 1)
     setSwitchState("SW2", 1)
+    setSwitchState("SW3", 1)
+    switch = {"blower": "0", "pompa": "0", "pompa2": "0"}
+    ref.child("switch").set(switch)
 
 def restart():
     data = {"distance": "0", "ph": "0", "temp": "0", "turbidity": "0"}
+    switch = {"blower": "0", "pompa": "0", "pompa2": "0"}
     ref.child("data").set(data)
+    ref.child("switch").set(switch)
+    ref.child("restart").set("0")
     groundState()
 
 def sendPakan():
     setSwitchState("SW1", 0)
     setSwitchState("SW0", 0)
     time.sleep(2)   
-    
+    print(2)
     groundState()
+    ref.child("switch").child("blower").set("0")
 
 def sendPompa():
     setSwitchState("SW2", 0)
-    time.sleep(20)
+    time.sleep(5)
+    print("5")
+    time.sleep(5)
+    print("10")
+    time.sleep(5)
+    print("15")
+    time.sleep(5)
+    print("20")
+    ref.child("switch").child("pompa").set("0")
     setSwitchState("SW2", 1)
     groundState()
 
-def test(Data):
+def sendAliri():
+    setSwitchState("SW3", 0)
+    time.sleep(5)
+    print("5")
+    time.sleep(5)
+    print("10")
+    time.sleep(5)
+    print("15")
+    time.sleep(5)
+    print("20")
+    ref.child("switch").child("pompa2").set("0")
+    setSwitchState("SW3", 1)
+    groundState()
+
+def main(Data):
     print(Data.path)
     print(Data.data)
     print(Data.event_type)
@@ -76,11 +105,18 @@ def test(Data):
         if (Data.data[0] == '1'):
             sendPompa()
 
+
+    if (Data.path == "/switch"):
+        if (Data.data["pompa2"] == '1'):
+            sendPompa()
+    elif (Data.path == "/switch/pompa2"):
+        if (Data.data[0] == '1'):
+            sendPompa()
+
     elif (Data.path == "/restart"):
         if (Data.data == "1"):
             restart()
             print("Restart init")
 
 groundState()
-# ref.listen(test)
-sendPakan()
+ref.listen(main)
